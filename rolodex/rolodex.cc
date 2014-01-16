@@ -28,15 +28,6 @@ void printStarBanner();
 int charCount(string s);
 void printMenuOptions();
 
-
-void insertAddress_SW();
-void findAddress_SW();
-void deleteAddress_SW();
-void printRolodex_SW();
-void importRolodex_SW();
-void exportRolodex_SW();
-void quit_SW();
-
 char makeLower(char c);
 string makeLower(string s);
 
@@ -125,7 +116,7 @@ public:
     }
 
 
-    void print()
+    void printRolodex()
     {
         for(Node *p = head; p != NULL; p = p -> next)
         {
@@ -157,20 +148,69 @@ private:
 };
 
 
+void insertAddress_SW(Rolodex & r)
+{
+    string fName, lName, address, phoneNumber;
+    printHeader("Add Entry");
+    cout << "Example Input:" << "\nFirst Name: John\nLast Name: Smith\nAddress: 1234 Main St."
+        << "\nPhone Number: 1234456677" << endl;
+    
+    printStarBanner();
+
+    cout << "\nFirst Name: ";
+    cin.ignore(1000, '\n');
+
+    getline(cin, fName);
+    cout << "Last Name: ";
+    getline(cin, lName);
+    cout << "Address: ";
+    getline(cin, address);
+    cout << "Phone Number: ";
+    getline(cin, phoneNumber);
+
+    r.insert(fName, lName, address, phoneNumber);
+
+    cout << "Entry Confirmed" << endl;
+}
+
+void findAddress_SW()
+{
+}
+
+void deleteAddress_SW()
+{
+}
+
+void printRolodex_SW(Rolodex r)
+{
+    r.printRolodex();
+}
+
+void importRolodex_SW()
+{
+}
+
+void exportRolodex_SW()
+{
+}
+
+void quit_SW()
+{
+}
 
 int main()
 {
+    Rolodex r;
     char userInput = 'x';
 
     printMenu();
-    Rolodex r;
     
     while(cin >> userInput)
     {
         switch(userInput)
         {
             case 'i':
-                insertAddress_SW();
+                insertAddress_SW(r);
                 break;
             case 'f':
                 findAddress_SW();
@@ -179,7 +219,8 @@ int main()
                 deleteAddress_SW();
                 break;
             case 'p':
-                printRolodex_SW();
+                cin.ignore(1000, '\n');
+                printRolodex_SW(r);
                 break;
             case 'l':
                 importRolodex_SW();
@@ -255,33 +296,6 @@ void printMenuOptions()
 }
 
 
-void insertAddress_SW()
-{
-}
-
-void findAddress_SW()
-{
-}
-
-void deleteAddress_SW()
-{
-}
-
-void printRolodex_SW()
-{
-}
-
-void importRolodex_SW()
-{
-}
-
-void exportRolodex_SW()
-{
-}
-
-void quit_SW()
-{
-}
 
 
 
