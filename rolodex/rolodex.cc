@@ -17,10 +17,10 @@
 */
 
 #include <iostream>
-
 using namespace std;
 
 #define WINDOW_LENGTH 80
+
 
 void printMenu();
 void printHeader(string s);
@@ -29,18 +29,178 @@ int charCount(string s);
 void printMenuOptions();
 
 
+void insertAddress_SW();
+void findAddress_SW();
+void deleteAddress_SW();
+void printRolodex_SW();
+void importRolodex_SW();
+void exportRolodex_SW();
+void quit_SW();
+
+char makeLower(char c);
+string makeLower(string s);
+
+class Rolodex // a double linked list sorted alphabetically ascending order by last name
+{
+    struct Node
+    {
+        string fname,
+            lname,
+            address,
+            phoneNumber;
+        Node *prev, *next;
+
+        Node(string fn, string ln, string adr, string pN, Node *p, Node *n)
+        :fname(fn), lname(ln), address(adr), phoneNumber(pN), prev(p), next(n)
+        {}
+
+        void printNode()
+        {
+            cout << "Name: " + lname + ", " + fname << "\tAddress: " + address
+                << "\tPhone: " + phoneNumber;
+        }
+
+
+
+    };
+
+    Node *head, *tail;
+
+public:
+    Rolodex()
+    :head(NULL), tail(NULL)
+    {}
+
+    void insert(string fn, string ln, string adr, string pN) //parameters retrieved from user
+    {
+        if(!head)
+        {
+            head = tail = new Node(fn, ln, adr, pN, NULL, NULL);
+            return;
+        }
+
+        if(findLName(ln))//if last name already exists
+        {
+            cout << "ERROR: name " << ln << " already exists. Please use a different name." << endl;
+            return;
+        }
+
+        if(makeLower(ln) < makeLower(head -> lname)) //then push on to front of list
+        {
+            head -> next = new Node(head -> fname, head -> lname, head -> address, head -> phoneNumber, head, head -> next);
+            head -> fname = fn;
+            head -> lname = ln;
+            head -> address = adr;
+            head -> phoneNumber = pN;
+
+            if(head == tail)
+                tail = tail -> next;
+
+            return;
+        }
+
+        else if(makeLower(ln) > makeLower(tail-> lname)) //then tag on back of list
+        {
+            tail -> next = new Node(fn, ln, adr, pN, tail, NULL);
+            tail = tail -> next;
+            return;
+        }
+
+        else
+        {
+            Node *newNode = new Node(fn, ln, adr, pN, findPrev(ln), findNext(ln));
+            newNode -> prev -> next = newNode;
+            newNode -> next -> prev = newNode;
+            return;
+        }
+
+        cout << ln << " DID NOT INSERT CORRECTLY" << endl;
+    }
+
+    bool findLName(string s)
+    {
+        for(Node *p = head; p != NULL; p = p -> next)
+            if(makeLower(p -> lname) == makeLower(s))
+                return true;
+    }
+
+
+    void print()
+    {
+        for(Node *p = head; p != NULL; p = p -> next)
+        {
+            p -> printNode();
+            cout << endl;
+        }
+    }
+
+private:
+    Node * findPrev(string s) //finds soon-to-be previous node of new node with key s (s=lname of new node)
+    {
+        for(Node *p = head; p != NULL; p = p -> next)
+            //if p -> next's last name > new node's last name (s), return p,
+            //as p will become our new node's previous node
+            if(makeLower(p -> lname) > makeLower(s))
+                return p -> prev;
+    }
+    
+    Node * findNext(string s) //find soon-to-be next node of newNode with key s (s=lname of new node)
+    {
+        for(Node *p = head; p != NULL; p = p -> next)
+            //(same if condition as in findPrev()
+            //if p -> next's last name > new node's last name, return p -> next,
+            //as p -> next will become our new nodes next node
+            if(makeLower(p -> lname) > makeLower(s))
+                return p;
+    }
+
+};
 
 
 
 int main()
 {
-    
-    
-    
+    char userInput = 'x';
+
     printMenu();
+    Rolodex r;
+    
+    while(cin >> userInput)
+    {
+        switch(userInput)
+        {
+            case 'i':
+                insertAddress_SW();
+                break;
+            case 'f':
+                findAddress_SW();
+                break;
+            case 'd':
+                deleteAddress_SW();
+                break;
+            case 'p':
+                printRolodex_SW();
+                break;
+            case 'l':
+                importRolodex_SW();
+                break;
+            case 's':
+                exportRolodex_SW();
+                break;
+            case 'q':
+                quit_SW();
+        }
+
+        printMenu();
+    }
 
 
 }
+
+
+
+
+
 
 void printMenu()
 {
@@ -92,5 +252,54 @@ void printMenuOptions()
         << "    l - load addresses from a given Rolodex file\n"
         << "    s - save the addresses to a specified Rolodex file\n"
         << "    q - quit Rolodex";
+}
+
+
+void insertAddress_SW()
+{
+}
+
+void findAddress_SW()
+{
+}
+
+void deleteAddress_SW()
+{
+}
+
+void printRolodex_SW()
+{
+}
+
+void importRolodex_SW()
+{
+}
+
+void exportRolodex_SW()
+{
+}
+
+void quit_SW()
+{
+}
+
+
+
+char makeLower(char c)
+{
+    return c | 32;
+}
+
+string makeLower(string s)
+{
+    string toReturn = "";
+    string toAdd = "";
+
+    for(int i = 0; i < s.length(); ++i)
+    {
+        toAdd = makeLower(s.at(i));
+        toReturn += toAdd;
+    }
+    return toReturn;
 }
 
