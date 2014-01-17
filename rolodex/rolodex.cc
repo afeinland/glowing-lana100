@@ -17,10 +17,13 @@
 */
 
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
 using namespace std;
 
 #define WINDOW_LENGTH 80
 
+bool isSaved = false; //global variable, set to true when user saves, false when user inputs
 
 void printMenu();
 void printHeader(string s);
@@ -45,9 +48,9 @@ class Rolodex // a double linked list sorted alphabetically ascending order by l
         :fname(fn), lname(ln), address(adr), phoneNumber(pN), prev(p), next(n)
         {}
 
-        void printNode()
+        void printNode(ostream & out)
         {
-            cout << "Name: " + lname + ", " + fname << "\tAddress: " + address
+            out << "Name: " + lname + ", " + fname << "\tAddress: " + address
                 << "\tPhone: " + phoneNumber;
         }
 
@@ -67,6 +70,7 @@ public:
         if(!head)
         {
             head = tail = new Node(fn, ln, adr, pN, NULL, NULL);
+            isSaved = false;
             return;
         }
 
@@ -87,6 +91,7 @@ public:
             if(head == tail)
                 tail = tail -> next;
 
+            isSaved = false;
             return;
         }
 
@@ -94,6 +99,7 @@ public:
         {
             tail -> next = new Node(fn, ln, adr, pN, tail, NULL);
             tail = tail -> next;
+            isSaved = false;
             return;
         }
 
@@ -102,6 +108,7 @@ public:
             Node *newNode = new Node(fn, ln, adr, pN, findPrev(ln), findNext(ln));
             newNode -> prev -> next = newNode;
             newNode -> next -> prev = newNode;
+            isSaved = false;
             return;
         }
         cout << ln << " DID NOT INSERT CORRECTLY" << endl;
@@ -123,7 +130,53 @@ public:
             cout << "ERROR: Last name not found!" << endl;
             return;
         }
-        toPrint -> printNode();
+        toPrint -> printNode(cout);
+    }
+
+    void exportRolodex(string outputFile)
+    {
+        if(!head)
+        {
+            cout << "List is empty. No need to save." << endl;
+            return;
+        }
+
+        ofstream out(outputFile.c_str());
+
+        for(Node *p = head; p != NULL; p = p -> next)
+        {
+            p -> printNode(out);
+            out << endl;
+        }
+
+            out.close();
+
+        cout << "Rolodex saved successfully" << endl;
+    }
+/*
+example input:
+Firstname
+Lastname
+Address
+Phone
+Firstname
+Lastname
+...
+*/
+    void importRolodex(string inputFile)
+    {
+        ifstream in(inputFile.c_str());
+        string fname, lname, adr, phone;
+        while(getline(in, fname))
+        {
+            getline(in, lname);
+            getline(in, adr);
+            getline(in, phone);
+            insert(fname, lname, adr, phone);
+        }
+
+
+        in.close();
     }
 
 
@@ -136,7 +189,7 @@ public:
         }
         for(Node *p = head; p != NULL; p = p -> next)
         {
-            p -> printNode();
+            p -> printNode(cout);
             cout << endl;
         }
     }
@@ -252,19 +305,55 @@ void deleteAddress_SW(Rolodex & r)
 
 void printRolodex_SW(Rolodex r)
 {
+    printHeader("Entries");
     r.printRolodex();
-}
-
-void importRolodex_SW(Rolodex & r)
-{
 }
 
 void exportRolodex_SW(Rolodex r)
 {
+    string output_file_name;
+    printHeader("Save Rolodex");
+    cout << "What file would you like to save the Rolodex to?" << endl;
+    cin.ignore(1000, '\n');
+    getline(cin, output_file_name);
+    r.exportRolodex(output_file_name);
+    isSaved = true;
 }
+
+void importRolodex_SW(Rolodex & r)
+{
+
+    string input_file_name;
+    printHeader("Load Rolodex");
+    cout << "What file would you like to import from?" << endl;
+    cin.ignore(1000, '\n');
+    getline(cin, input_file_name);
+    r.importRolodex(input_file_name);
+    isSaved = false;
+    cout << "Rolodex loaded successfully" << endl;
+}
+
+
 
 void quit_SW(Rolodex r)
 {
+    if(!isSaved)
+    {
+        char choice = 'x';
+        cout << "WARNING! You have not saved the Rolodex. Loading a new Rolodex will"
+            << " overwrite the existing Rolodex. Would you like to save the current Rolodex now?" << endl;
+
+        while(choice != 'y' && choice != 'n')
+        {
+            cout << "(y/n): ";
+            cin >> choice;
+        }
+
+        if(choice == 'y')
+            exportRolodex_SW(r);
+    }
+    cout << "Goodbye!" << endl;
+    exit(0);
 }
 
 int main()
@@ -323,8 +412,6 @@ void printMenu()
     cout << endl;
     printStarBanner();
     cout << endl; 
-    //TODO: print star banner before endl?
-
 }
 
 void printHeader(string s)
