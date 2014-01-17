@@ -104,25 +104,79 @@ public:
             newNode -> next -> prev = newNode;
             return;
         }
-
         cout << ln << " DID NOT INSERT CORRECTLY" << endl;
     }
 
-    bool findLName(string s)
+    Node *  findLName(string s)
     {
         for(Node *p = head; p != NULL; p = p -> next)
             if(makeLower(p -> lname) == makeLower(s))
-                return true;
+                return p;
+        return NULL;
+    }
+
+    void findLName_andPrint(string s)
+    {
+        Node * toPrint = findLName(s);
+        if(!toPrint)
+        {
+            cout << "ERROR: Last name not found!" << endl;
+            return;
+        }
+        toPrint -> printNode();
     }
 
 
     void printRolodex()
     {
+        if(!head)
+        {
+            cout << "Rolodex is empty!" << endl;
+            return;
+        }
         for(Node *p = head; p != NULL; p = p -> next)
         {
             p -> printNode();
             cout << endl;
         }
+    }
+
+    void removeEntry(string s)
+    {
+        Node * toRemove = findLName(s);
+        if(!toRemove)
+        {
+            cout << "ERROR: Entry not found!" << endl;
+            return;
+        }
+
+
+        if(head == tail)
+        {
+            delete head;
+            head = tail = NULL;
+            cout << "Entry Deleted successfully." << endl;
+            return;
+        }
+        else if(toRemove == head)
+        {
+            head = head -> next;
+            head -> prev = NULL;
+        }
+        else if(toRemove == tail)
+        {
+            tail = tail -> prev;
+            tail -> next = NULL;
+        }
+        else
+        {
+            //General Case
+            toRemove -> prev -> next = toRemove -> next;
+            toRemove -> next -> prev = toRemove -> prev;
+        }
+
+        delete toRemove;
+        cout << "Entry Deleted successfully." << endl;
     }
 
 private:
@@ -170,15 +224,30 @@ void insertAddress_SW(Rolodex & r)
 
     r.insert(fName, lName, address, phoneNumber);
 
-    cout << "Entry Confirmed" << endl;
+    cout << "\nEntry Confirmed" << endl;
 }
 
-void findAddress_SW()
+void findAddress_SW(Rolodex r)
 {
+    string lName;
+    printHeader("Find Entry");
+    cout << "Please Enter a last name: ";
+    cin.ignore(1000, '\n');
+    getline(cin, lName);
+    r.findLName_andPrint(lName); //prints node with corresponding lName, prints error message if lName not found
+    cout << endl;
 }
 
-void deleteAddress_SW()
+void deleteAddress_SW(Rolodex & r)
 {
+    string lName;
+    printHeader("Delete Entry");
+    cout << "Please enter the last name of the entry you wish to remove: ";
+    cin.ignore(1000, '\n');
+    getline(cin, lName);
+    r.removeEntry(lName); //removes entry if it exists; if not, rints error message
+    cout << endl;
+
 }
 
 void printRolodex_SW(Rolodex r)
@@ -186,15 +255,15 @@ void printRolodex_SW(Rolodex r)
     r.printRolodex();
 }
 
-void importRolodex_SW()
+void importRolodex_SW(Rolodex & r)
 {
 }
 
-void exportRolodex_SW()
+void exportRolodex_SW(Rolodex r)
 {
 }
 
-void quit_SW()
+void quit_SW(Rolodex r)
 {
 }
 
@@ -202,6 +271,10 @@ int main()
 {
     Rolodex r;
     char userInput = 'x';
+
+    r.insert("Alex", "Feinland", "address", "phone");
+    r.insert("Zlex", "Zeinland", "Zddress", "Zhone");
+    r.insert("Plex", "Peinland", "Pddress", "Phone");
 
     printMenu();
     
@@ -213,23 +286,23 @@ int main()
                 insertAddress_SW(r);
                 break;
             case 'f':
-                findAddress_SW();
+                findAddress_SW(r);
                 break;
             case 'd':
-                deleteAddress_SW();
+                deleteAddress_SW(r);
                 break;
             case 'p':
                 cin.ignore(1000, '\n');
                 printRolodex_SW(r);
                 break;
             case 'l':
-                importRolodex_SW();
+                importRolodex_SW(r);
                 break;
             case 's':
-                exportRolodex_SW();
+                exportRolodex_SW(r);
                 break;
             case 'q':
-                quit_SW();
+                quit_SW(r);
         }
 
         printMenu();
