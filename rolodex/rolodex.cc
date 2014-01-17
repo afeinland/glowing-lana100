@@ -110,7 +110,7 @@ public:
     Node *  findLName(string s)
     {
         for(Node *p = head; p != NULL; p = p -> next)
-            if(makeLower(p -> lname) == makeLower(s))
+            if(p -> lname == s)
                 return p;
         return NULL;
     }
